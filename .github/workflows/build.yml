@@ -13,6 +13,9 @@ on:
       - '**/README.md'
   workflow_dispatch:
 
+permissions:
+  packages: write
+
 env:
   MY_IMAGE_NAME: "${{ github.event.repository.name }}"  # the name of the image produced by this build, matches repo names
   MY_IMAGE_DESC: "My Customized Universal Blue Image"
