@@ -8,8 +8,11 @@ pkgs=(
 bcc
 bcc-tools
 fd-find
-ripgrep
+intel-gpu-tools
 intel-media-driver
+libva
+libva-utils
+ripgrep
 )
 
 rpm-ostree install \
