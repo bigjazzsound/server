@@ -8,11 +8,16 @@ pkgs=(
 bcc
 bcc-tools
 fd-find
+igt-gpu-tools
 intel-gpu-tools
 intel-media-driver
 libva
 libva-utils
+python3
+python3-pip
 ripgrep
+smartmontools
+unzip
 )
 
 rpm-ostree install \
