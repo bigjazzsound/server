@@ -8,6 +8,7 @@ pkgs=(
 bcc
 bcc-tools
 fd-find
+fish
 igt-gpu-tools
 intel-gpu-tools
 intel-media-driver
