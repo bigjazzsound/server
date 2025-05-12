@@ -14,6 +14,7 @@ intel-gpu-tools
 intel-media-driver
 libva
 libva-utils
+policycoreutils-python
 python3
 python3-pip
 ripgrep
