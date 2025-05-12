@@ -19,6 +19,7 @@ python3-pip
 ripgrep
 smartmontools
 unzip
+"https://github.com/k3s-io/k3s-selinux/releases/download/v1.6.latest.1/k3s-selinux-1.6-1.coreos.noarch.rpm"
 )
 
 rpm-ostree install \
@@ -26,3 +27,5 @@ rpm-ostree install \
         https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${RELEASE}.noarch.rpm
 
 rpm-ostree install ${pkgs[*]}
+
+curl -sfL https://get.k3s.io | sh -
