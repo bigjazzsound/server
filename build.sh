@@ -29,7 +29,7 @@ rpm-ostree install \
 rpm-ostree install ${pkgs[*]}
 
 curl -sfL https://get.k3s.io | \
-        INSTALL_K3S_SKIP_START=false \
+        INSTALL_K3S_SKIP_START=true \
         INSTALL_K3S_SKIP_SELINUX_RPM=true \
         sh -s - \
         --disable=traefik,servicelb \
