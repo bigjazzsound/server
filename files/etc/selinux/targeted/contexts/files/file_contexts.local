@@ -1,0 +1,4 @@
+/var/lib/k0s/bin/containerd.* system_u:object_r:container_runtime_exec_t:s0
+/var/lib/k0s/bin/runc system_u:object_r:container_runtime_exec_t:s0
+/var/lib/k0s/containerd(/.*)? system_u:object_r:container_var_lib_t:s0
+/var/lib/k0s/containerd/io.containerd.snapshotter.*/snapshots(/.*)? system_u:object_r:container_ro_file_t:s0
