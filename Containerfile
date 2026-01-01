@@ -1,40 +1,59 @@
-# Allow build scripts to be referenced without being copied into the final image
-FROM scratch AS ctx
-COPY build_files /
+## 1. BUILD ARGS
+# These allow changing the produced image by passing different build args to adjust
+# the source from which your image is built.
+# Build args can be provided on the commandline when building locally with:
+#   podman build -f Containerfile --build-arg FEDORA_VERSION=40 -t local-image
 
-# Base Image
-FROM ghcr.io/ublue-os/bazzite:stable
+# SOURCE_IMAGE arg can be anything from ublue upstream which matches your desired version:
+# See list here: https://github.com/orgs/ublue-os/packages?repo_name=main
+# - "silverblue"
+# - "kinoite"
+# - "sericea"
+# - "onyx"
+# - "lazurite"
+# - "vauxite"
+# - "base"
+#
+#  "aurora", "bazzite", "bluefin" or "ucore" may also be used but have different suffixes.
+ARG SOURCE_IMAGE="silverblue"
 
-## Other possible base images include:
-# FROM ghcr.io/ublue-os/bazzite:latest
-# FROM ghcr.io/ublue-os/bluefin-nvidia:stable
-# 
-# ... and so on, here are more base images
-# Universal Blue Images: https://github.com/orgs/ublue-os/packages
-# Fedora base image: quay.io/fedora/fedora-bootc:41
-# CentOS base images: quay.io/centos-bootc/centos-bootc:stream10
+## SOURCE_SUFFIX arg should include a hyphen and the appropriate suffix name
+# These examples all work for silverblue/kinoite/sericea/onyx/lazurite/vauxite/base
+# - "-main"
+# - "-nvidia"
+# - "-asus"
+# - "-asus-nvidia"
+# - "-surface"
+# - "-surface-nvidia"
+#
+# aurora, bazzite and bluefin each have unique suffixes. Please check the specific image.
+# ucore has the following possible suffixes
+# - stable
+# - stable-nvidia
+# - stable-zfs
+# - stable-nvidia-zfs
+# - (and the above with testing rather than stable)
+ARG SOURCE_SUFFIX="-main"
 
-### [IM]MUTABLE /opt
-## Some bootable images, like Fedora, have /opt symlinked to /var/opt, in order to
-## make it mutable/writable for users. However, some packages write files to this directory,
-## thus its contents might be wiped out when bootc deploys an image, making it troublesome for
-## some packages. Eg, google-chrome, docker-desktop.
-##
-## Uncomment the following line if one desires to make /opt immutable and be able to be used
-## by the package manager.
+## SOURCE_TAG arg must be a version built for the specific image: eg, 39, 40, gts, latest
+ARG SOURCE_TAG="latest"
 
-# RUN rm /opt && mkdir /opt
 
-### MODIFICATIONS
+### 2. SOURCE IMAGE
+## this is a standard Containerfile FROM using the build ARGs above to select the right upstream image
+FROM ghcr.io/ublue-os/${SOURCE_IMAGE}${SOURCE_SUFFIX}:${SOURCE_TAG}
+
+
+### 3. MODIFICATIONS
 ## make modifications desired in your image and install packages by modifying the build.sh script
 ## the following RUN directive does all the things required to run "build.sh" as recommended.
 
-RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
-    --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=tmpfs,dst=/tmp \
-    /ctx/build.sh
-    
-### LINTING
-## Verify final image and contents are correct.
-RUN bootc container lint
+COPY build.sh /tmp/build.sh
+
+RUN mkdir -p /var/lib/alternatives && \
+    /tmp/build.sh && \
+    ostree container commit
+## NOTES:
+# - /var/lib/alternatives is required to prevent failure with some RPM installs
+# - All RUN commands must end with ostree container commit
+#   see: https://coreos.github.io/rpm-ostree/container/#using-ostree-container-commit
